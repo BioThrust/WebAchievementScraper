@@ -2,7 +2,12 @@ const puppeteer = require('puppeteer');
 const express = require('express');
 let page;
 async function login(steamID) {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    'args' : [
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    ]
+  });
   page = await browser.newPage();
   await page.goto('https://steamcommunity.com/login/home/?goto=profiles%2F76561198368720362');
   await page.waitForTimeout(4000);
@@ -33,6 +38,7 @@ app.get('/:steamID', async (req, res) => {
     const steamID = req.params.steamID;
     console.log('request received')
     await scrape(steamID)
+    await page.waitForTimeout(6000)
     res.send('Login process completed.');
   } catch (err) {
     console.error('Error during login:', err);
