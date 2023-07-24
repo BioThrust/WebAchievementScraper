@@ -8,7 +8,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "app": "node SteamWebScraper.js"
+    "start": "node SteamWebScraper.js"
   },
   "keywords": [],
   "author": "",
