@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "puppeteer": "^20.9.0"
+  },
+  "name": "herokuscripts",
+  "version": "1.0.0",
+  "main": "SteamWebScraper.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "app": "node SteamWebScraper.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
