@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const express = require('express');
+const axios = require('axios');
 let page;
 let allGames;
 let actualGameName;
@@ -26,7 +27,12 @@ async function login(steamID) {
 }
 login()
 async function scrape(steamID) {
-  await page.goto(`https://steamcommunity.com/profiles/${steamID}/games/?tab=all`); // Go to base achievment+game page
+  if(/[a-z]/i.test(steamID)){
+    await page.goto(`https://steamcommunity.com/id/${steamID}/games/?tab=all`);
+  } else {
+    await page.goto(`https://steamcommunity.com/profiles/${steamID}/games/?tab=all`); // Go to base achievment+game page
+  }
+  
   await page.waitForTimeout(1000);
   await page.screenshot({'path': 'oxddylabs_js.png'});
   let currentURL = page.url()
