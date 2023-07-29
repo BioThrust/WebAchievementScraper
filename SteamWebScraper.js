@@ -6,9 +6,12 @@ let allGames;
 let actualGameName;
 let fractionText;
 var dict = {};
+let achievmentName;
+let achievments = [];
+let counter = 0;
 async function login(steamID) {
   const browser = await puppeteer.launch({
-    'args' : [
+    'args': [
       '--no-sandbox',
       '--disable-setuid-sandbox'
     ]
@@ -22,52 +25,71 @@ async function login(steamID) {
   await page.click('button[type="submit"]');
   console.log('logged in')
   await page.waitForTimeout(2000);
-  await page.screenshot({'path': 'oxylabs_js.png'})
+  await page.screenshot({ 'path': 'oxylabs_js.png' })
 
 }
 login()
 async function scrape(steamID) {
-  if(/[a-z]/i.test(steamID)){
+  if (/[a-z]/i.test(steamID)) {
     await page.goto(`https://steamcommunity.com/id/${steamID}/games/?tab=all`);
   } else {
     await page.goto(`https://steamcommunity.com/profiles/${steamID}/games/?tab=all`); // Go to base achievment+game page
   }
-  
-  await page.waitForTimeout(1000);
-  await page.screenshot({'path': 'oxddylabs_js.png'});
+
   let currentURL = page.url()
   let array = []
   let gameNames = []
   let fractionTexts = []
+
   allGames = await page.$$('.gameslistitems_GamesListItemContainer_29H3o'); // Search for Games
 
-  for(let i=0;i<allGames.length; i++){ // Loop through games
+  for (let i = 0; i < allGames.length; i++) { // Loop through games
     let game = await allGames[i].$('.gameslistitems_AchievementsProgressLabel_3eZML'); // Search for Achievment section of game
     let gameName = await allGames[i].$('.gameslistitems_GameName_22awl') // Search for Name of Game
     actualGameName = await page.evaluate(gameName => gameName.textContent, gameName) // Get the text attribute
     gameNames.push(actualGameName)
-    
-    if(game!=null){ // If the Game has achievments
+
+    if (game != null) { // If the Game has achievments
       let fraction = await allGames[i].$('.gameslistitems_AchievementsFraction_1YRRM') // Search for achievment fraction
       fractionText = await page.evaluate(fraction => fraction.textContent, fraction);
       let gameText = await page.evaluate(game => game.textContent, game);
       fractionTexts.push(fractionText)
       await array.push(gameText);
 
-      console.log(actualGameName+' '+fractionText)
+      console.log(actualGameName + ' ' + fractionText)
 
       // Click on achievment button and Scan all achievments.
-      
-    } else{
-      console.log(actualGameName+' No Game Achievments')
-      fractionTexts.push(' ')
+
+      try {
+        await game.click()
+        await page.waitForSelector('.achieveTxt h3', { timeout: 2000 });
+        let achievements = await page.$$eval('.achieveTxt h3', elements => elements.map(el => el.textContent));
+        achievments.push(...achievements);
+        dict[gameNames[i]] = { 'achievements': achievements }
+        achievements = []
+        await page.goBack();
+        await page.waitForSelector('.gameslistitems_GamesListItemContainer_29H3o')
+        allGames = await page.$$('.gameslistitems_GamesListItemContainer_29H3o');
+      } catch {
+        await page.goBack();
+        allGames = await page.$$('.gameslistitems_GamesListItemContainer_29H3o');
+        continue;
+      }
+
+    } else {
+      console.log(actualGameName + ' No Game Achievments')
+      fractionTexts.push('0/0')
     }
   }
 
   await page.waitForTimeout(2000)
-  await page.screenshot({'path': 'oxddsdfylabs_js.png'});
-  for(let i=0;i<gameNames.length;i++){
-    dict[gameNames[i]] = fractionTexts[i];
+  await page.screenshot({ 'path': 'oxddsdfylabs_js.png' });
+  for (let i = 0; i < gameNames.length; i++) {
+    if (!dict.hasOwnProperty(gameNames[i])) {
+      // If the key does not exist, create it and set its value to an empty object
+      dict[gameNames[i]] = {};
+    }
+    dict[gameNames[i]]['achievementProgress'] = fractionTexts[i];
   }
 }
 
@@ -82,6 +104,7 @@ app.get('/:steamID', async (req, res) => {
     await page.waitForTimeout(6000)
     res.send(dict);
   } catch (err) {
+    await page.screenshot({ 'path': 'd.png' })
     console.error('Error during login:', err);
     res.status(500).send('Error during login.');
   }
