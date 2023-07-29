@@ -7,8 +7,11 @@ let actualGameName;
 let fractionText;
 var dict = {};
 let achievmentName;
-let achievments = [];
+let achievements = [];
 let counter = 0;
+let achieveUnlockTime;
+let completed;
+let achievementArray = [];
 async function login(steamID) {
   const browser = await puppeteer.launch({
     'args': [
@@ -63,10 +66,40 @@ async function scrape(steamID) {
       try {
         await game.click()
         await page.waitForSelector('.achieveTxt h3', { timeout: 2000 });
-        let achievements = await page.$$eval('.achieveTxt h3', elements => elements.map(el => el.textContent));
-        achievments.push(...achievements);
-        dict[gameNames[i]] = { 'achievements': achievements }
-        achievements = []
+        let tempAchievements = await page.$$('.achieveRow')
+        console.log(tempAchievements.length)
+        dict[gameNames[i]] = {}
+        dict[gameNames[i]]['achievements'] = {}
+        for (let x = 0;x<tempAchievements.length;x++){ //Loop through achievements
+          let achievements = await tempAchievements[x].$eval('.achieveTxt h3', elements => elements.textContent); //achievement name
+
+          achievementArray.push(achievements);
+          
+          // Get Achievement Unlock Time and Completion Status
+          try{
+
+            achieveUnlockTime = await tempAchievements[x].$eval('.achieveUnlockTime', elements => elements.textContent);
+            let cleanedString = achieveUnlockTime.replace(/\n|\t/g, '');
+            completed = true
+            
+            dict[gameNames[i]]['achievements'][achievementArray[x]] = {}
+            dict[gameNames[i]]['achievements'][achievementArray[x]]['achieveUnlockTime'] = cleanedString
+            dict[gameNames[i]]['achievements'][achievementArray[x]]['completion'] = completed
+          }catch{
+            completed = false
+            dict[gameNames[i]]['achievements'][achievementArray[x]] = {}
+            dict[gameNames[i]]['achievements'][achievementArray[x]]['achieveUnlockTime'] = "N/A"
+            dict[gameNames[i]]['achievements'][achievementArray[x]]['completion'] = completed
+          }
+          
+        }
+        
+        
+          // dict[gameNames[i]] = { 'achievements': achievementArray }
+          
+        
+        
+        
         await page.goBack();
         await page.waitForSelector('.gameslistitems_GamesListItemContainer_29H3o')
         allGames = await page.$$('.gameslistitems_GamesListItemContainer_29H3o');
@@ -80,6 +113,8 @@ async function scrape(steamID) {
       console.log(actualGameName + ' No Game Achievments')
       fractionTexts.push('0/0')
     }
+    achievementArray = []
+    console.log(achieveUnlockTime)
   }
 
   await page.waitForTimeout(2000)
