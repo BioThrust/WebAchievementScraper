@@ -16,7 +16,7 @@ app.get('/:steamID', async (req, res) => {
   try {
     console.log('yo')
     const steamID = req.params.steamID; // Take the SteamID in the  url of the website and use it as a function parameter to scrape that profile
-    let job = requestQueue.add(steamID);
+    let job = await requestQueue.add(steamID);
     console.log('yes')
     
    
