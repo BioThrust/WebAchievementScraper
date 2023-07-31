@@ -41,6 +41,7 @@ async function scrape(steamID) {
     await page.goto(`https://steamcommunity.com/id/${steamID}/games/?tab=all`);
   } else {
     await page.goto(`https://steamcommunity.com/profiles/${steamID}/games/?tab=all`); // Go to base achievment+game page
+    console.log('went here done that')
   }
 
   let currentURL = page.url()
