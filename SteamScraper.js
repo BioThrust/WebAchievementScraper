@@ -11,6 +11,11 @@ let counter = 0;
 let achieveUnlockTime;
 let completed;
 let achievementArray = [];
+let workers = process.env.WEB_CONCURRENCY || 2;
+const Queue = require('bull');
+const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+const requestQueue = new Queue('requests', REDIS_URL);
+const responseQueue = new Queue('responses', REDIS_URL);
 async function login(steamID) {
   const browser = await puppeteer.launch({
     'args': [
@@ -125,4 +130,14 @@ async function scrape(steamID) {
     }
     dict[gameNames[i]]['achievementProgress'] = fractionTexts[i];
   }
+  responseQueue.add(dict)
 }
+
+
+let maxJobsPerWorker = 50;
+
+requestQueue.process(maxJobsPerWorker, async (job) => {
+  let steamID = job.steamID
+  await scrape(steamID)
+});
+
