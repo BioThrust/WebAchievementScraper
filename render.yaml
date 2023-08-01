@@ -17,7 +17,13 @@ services:
           name: lightning
           property: port
       - fromGroup: conc-settings
-
+  - type: redis
+    name: lightning
+    ipAllowList: # required
+      - source: 0.0.0.0/0
+        description: everywhere
+    plan: free # optional (defaults to starter instance type)
+    maxmemoryPolicy: noeviction # optional (defaults to allkeys-lru)
   - type: worker
     name: queue
     runtime: docker
