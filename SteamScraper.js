@@ -133,22 +133,24 @@ async function scrape(steamID, callback) {
 
     callback()
 }
+client.on('error', function (err) {
+    console.log('Something went wrong ' + err);
+});
 
 client.on('connect', function () {
     console.log('Redis client connected');
 });
 
-client.on('error', function (err) {
-    console.log('Something went wrong ' + err);
-});
+client.connect();
+
 
 client.get('steamID', function (err, steamID) {
     if (err) throw err;
     if (steamID) {
-        scrape(steamID, function(){
+        scrape(steamID, function () {
             client.set('completed', true);
             client.set('result', 'some data');
         })
     }
-    
+
 });
