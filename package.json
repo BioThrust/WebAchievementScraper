@@ -13,7 +13,7 @@
   "main": "SteamWebScraper.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "sudo apt-get install redis-server & redis-server & node SteamWebScraper.js"
+    "start": "redis-server & node SteamWebScraper.js"
   },
   "keywords": [],
   "author": "",
