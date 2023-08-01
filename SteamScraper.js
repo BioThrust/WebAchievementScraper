@@ -148,7 +148,7 @@ async function scrape(steamID) {
         }
         dict[gameNames[i]]['achievementProgress'] = fractionTexts[i];
     }
-    responseQueue.add({ dict })
+    responseQueue.add({ dict }) //YOOOO
 }
 
 
