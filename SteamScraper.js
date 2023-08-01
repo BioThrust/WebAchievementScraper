@@ -144,26 +144,23 @@ async function scrape(steamID, callback) {
 
     callback()
 }
-client.on('error', function (err) {
+client.on("error", function (err) {
     let redisURL = process.env.REDIS_URL;
-    console.log(redisURL)
-    console.log('Something went wrong ' + err);
+    console.log(redisURL);
+    console.error("Something went wrong: " + err);
 });
 
-client.on('connect', function () {
-    console.log('Redis client connected');
-});
+client.on("ready", function () {
+    console.log("Redis client connected");
 
-client.connect();
-
-
-client.get('steamID', function (err, steamID) {
-    if (err) throw err;
-    if (steamID) {
-        scrape(steamID, function () {
-            client.set('completed', true);
-            client.set('result', 'some data');
-        })
-    }
-
+    // Perform your Redis operations here, for example:
+    client.get("steamID", function (err, steamID) {
+        if (err) throw err;
+        if (steamID) {
+            scrape(steamID, function () {
+                client.set("completed", true);
+                client.set("result", "some data");
+            });
+        }
+    });
 });
