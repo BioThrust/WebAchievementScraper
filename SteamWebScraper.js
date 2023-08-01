@@ -2,7 +2,7 @@ const express = require('express');
 let completed = false
 const app = express();
 const Queue = require('bull');
-
+let dict = null;
 const redis = require('redis');
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const requestQueue = new Queue('requests', REDIS_URL);
@@ -20,7 +20,7 @@ client.on('error', (err) => {
 });
 responseQueue.process(async (job) => {
   // handle incoming response here
-  let dict = job.data.dict;
+  dict = job.data.dict;
   completed=true
   // send result back to client
 });
@@ -35,9 +35,9 @@ app.get('/:steamID', async (req, res) => {
     console.log('yes');
 
     const jobResult = await job.finished();
-    const dict = jobResult.data; // Retrieve the `dict` from the finished job
 
-    if (dict) {
+
+    if (dict!= null) {
       res.send(dict);
     } else {
       res.send({
