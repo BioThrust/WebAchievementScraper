@@ -3,13 +3,7 @@ services:
   - type: web
     name: webdis
     runtime: docker
-    repo: https://github.com/render-examples/webdis.git # optional
-    region: oregon # optional (defaults to oregon)
-    plan: standard # optional (defaults to starter instance type)
-    branch: master # optional (defaults to master)
     rootDir: webdis
-    dockerCommand: ./webdis.sh # optional (defaults to Dockerfile command)
-    numInstances: 3 # optional (defaults to 1)
     healthCheckPath: /
     envVars:
       - key: REDIS_HOST
@@ -23,26 +17,10 @@ services:
           name: lightning
           property: port
       - fromGroup: conc-settings
-      
+
   - type: worker
     name: queue
     runtime: docker
-    dockerfilePath: ./sub/Dockerfile # optional
-    dockerContext: ./sub/src # optional
-    branch: queue # optional
-databases:
-  - name: elephant
-    databaseName: mydb # optional (Render may add a suffix)
-    user: adrian # optional
-    ipAllowList: # optional (defaults to allow all)
-      - source: 203.0.113.4/30
-        description: office
-      - source: 198.51.100.1
-        description: home
-
-  - name: private database
-    databaseName: private
-    ipAllowList: [] # only allow internal connections
 
 
 envVarGroups:
