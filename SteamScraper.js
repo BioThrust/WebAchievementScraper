@@ -1,7 +1,5 @@
 const puppeteer = require('puppeteer');
 const axios = require('axios');
-const redis = require('redis');
-const { url } = require('inspector');
 let page;
 let allGames;
 let actualGameName;
@@ -14,18 +12,24 @@ let achieveUnlockTime;
 let completed;
 let achievementArray = [];
 let workers = process.env.WEB_CONCURRENCY || 2;
+const Queue = require('bull');
 
-if (process.env.REDIS_URL) {
-    var rtg = require("url").parse(process.env.REDIS_URL);
-    var client = require("redis").createClient(rtg.port, rtg.hostname);
+const requestQueue = new Queue('requests', REDIS_URL);
+const responseQueue = new Queue('responses', REDIS_URL);
+const redis = require('redis');
+const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
-    // Check if the 'auth' property exists before using it
-    if (rtg.auth) {
-        client.auth(rtg.auth.split(":")[1]);
-    }
-} else {
-    var client = require("redis").createClient();
-}
+// Create a Redis client
+const client = redis.createClient(REDIS_URL);
+
+// Event listeners to handle Redis client connection and error
+client.on('connect', () => {
+  console.log('Connected to Redis server');
+});
+
+client.on('error', (err) => {
+  console.error('Error connecting to Redis:', err);
+});
 async function login(steamID) {
     const browser = await puppeteer.launch({
         'args': [
@@ -46,7 +50,7 @@ async function login(steamID) {
 
 }
 login()
-async function scrape(steamID, callback) {
+async function scrape(steamID) {
     if (/[a-z]/i.test(steamID)) {
         await page.goto(`https://steamcommunity.com/id/${steamID}/games/?tab=all`);
     } else {
@@ -141,27 +145,15 @@ async function scrape(steamID, callback) {
         }
         dict[gameNames[i]]['achievementProgress'] = fractionTexts[i];
     }
-
-    callback()
+    responseQueue.add(dict)
 }
-client.on("error", function (err) {
-    let redisURL = process.env.REDIS_URL;
-    console.log(redisURL);
-    console.error("Something went wrong: " + err);
+
+
+let maxJobsPerWorker = 50;
+
+requestQueue.process(maxJobsPerWorker, async (job) => {
+    console.log('received')
+    let steamID = job.steamID
+    await scrape(steamID)
 });
 
-client.on("ready", function () {
-    console.log("Redis client connected");
-
-    // Perform your Redis operations here, for example:
-    client.get("steamID", function (err, steamID) {
-        if (err) throw err;
-        if (steamID) {
-            scrape(steamID, function () {
-                client.set("completed", true);
-                client.set("result", "some data");
-            });
-        }
-    });
-});
-module.exports = scrape;

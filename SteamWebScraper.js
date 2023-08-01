@@ -1,16 +1,29 @@
-// server.js - Your server logic resides here
-
 const express = require('express');
+let completed = false
 const app = express();
+const Queue = require('bull');
+const requestQueue = new Queue('requests', REDIS_URL);
+const responseQueue = new Queue('responses', REDIS_URL);
 const redis = require('redis');
-const redisURL = process.env.REDIS_URL;
-const scrape = require('./SteamScraper.js'); // Import the `scrape` function
+const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
-let client;
+// Create a Redis client
+const client = redis.createClient(REDIS_URL);
 
-// Rest of your server code here
-// ...
+// Event listeners to handle Redis client connection and error
+client.on('connect', () => {
+  console.log('Connected to Redis server');
+});
 
+client.on('error', (err) => {
+  console.error('Error connecting to Redis:', err);
+});
+responseQueue.process(async (job) => {
+  // handle incoming response here
+  let dict = job.data.dict;
+  completed=true
+  // send result back to client
+});
 // Define a route for triggering the login process
 app.get('/:steamID', async (req, res) => {
   try {
@@ -18,25 +31,26 @@ app.get('/:steamID', async (req, res) => {
     const steamID = req.params.steamID;
     console.log('Steam ID:', steamID);
 
-    // Call the scrape function passing the steamID
-    scrape(steamID).then((dict) => {
-      if (dict) {
-        res.send(dict);
-      } else {
-        res.send({
-          "status": false,
-          "message": "Job not completed yet"
-        });
-      }
-    }).catch((err) => {
-      console.error('Error during scraping:', err);
-      res.status(500).send('Error during scraping.');
-    });
+    let job = await requestQueue.add({ steamID }); // Pass steamID as the job data
+    console.log('yes');
+
+    const jobResult = await job.finished();
+    const dict = jobResult.data; // Retrieve the `dict` from the finished job
+
+    if (dict) {
+      res.send(dict);
+    } else {
+      res.send({
+        "status": false,
+        "message": "Job not completed yet"
+      });
+    }
   } catch (err) {
     console.error('Error during login:', err);
     res.status(500).send('Error during login.');
   }
 });
+
 
 // Start the server and listen on a specific port
 const port = process.env.PORT || 3000;
