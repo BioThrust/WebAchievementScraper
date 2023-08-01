@@ -37,10 +37,7 @@ app.get('/:steamID', async (req, res) => {
     const jobResult = await job.finished();
 
 
-    res.send({
-      "status": false,
-      "message": "Job not completed yet"
-    });
+
     
   } catch (err) {
     console.error('Error during login:', err);
