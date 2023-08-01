@@ -3,6 +3,8 @@ let completed = false
 const app = express();
 const Queue = require('bull');
 let dict = null;
+let userDict = {}
+let steamIDArray = []
 const redis = require('redis');
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const requestQueue = new Queue('requests', REDIS_URL);
@@ -24,19 +26,22 @@ responseQueue.process(async (job) => {
   completed=true
   console.log('ITS FINALLY DONE')
   console.log(dict)
+  userDict[steamIDArray[0]] = dict
+  steamIDArray.shift()
   // send result back to client
 });
 // Define a route for triggering the login process
 app.get('/steam/:steamID', async (req, res) => {
   try {
     console.log('yo');
-    const steamID = req.params.steamID;
+    let steamID = req.params.steamID;
+    steamIDArray.push(steamID)
     console.log('Steam ID:', steamID);
 
     let job = await requestQueue.add({ steamID }); // Pass steamID as the job data
     console.log('yes');
 
-    const jobResult = await job.finished();
+    let jobResult = await job.finished();
 
 
     if (dict!= null) {
@@ -52,11 +57,11 @@ app.get('/steam/:steamID', async (req, res) => {
     res.status(500).send('Error during login.');
   }
 });
-app.get('/result', async (req, res) => {
+app.get('/result/:newssteamid', async (req, res) => {
   try {
-
+    let steamID = req.params.steamID;
     if (dict) {
-      res.send(dict);
+      res.send(userDict[steamID]);
     } else {
       res.send({
         "status": false,
