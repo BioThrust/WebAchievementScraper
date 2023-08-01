@@ -20,8 +20,8 @@ app.get('/:steamID', async (req, res) => {
   try {
     console.log('yo')
     const steamID = req.params.steamID; // Take the SteamID in the  url of the website and use it as a function parameter to scrape that profile
-    client.set('steamID', steamID);
-    client.set('completed', false);
+    // client.set('steamID', steamID);
+    // client.set('completed', false);
     console.log('yes')
 
     if (completed == false) {
@@ -42,9 +42,9 @@ app.get('/:steamID', async (req, res) => {
 });
 app.get('/result', async (req, res) => {
   try {
-    const completed = await client.getAsync('completed');
+    // const completed = await client.getAsync('completed');
     if (completed === 'true') {
-      const result = await client.getAsync('result');
+      // const result = await client.getAsync('result');
       res.send({
         "status": true,
         "result": result
