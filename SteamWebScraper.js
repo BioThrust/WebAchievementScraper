@@ -1,26 +1,20 @@
 const express = require('express');
 let completed = false
 const app = express();
-const Queue = require('bull');
+
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-const requestQueue = new Queue('requests', REDIS_URL);
-const responseQueue = new Queue('responses', REDIS_URL);
-responseQueue.process(async (job) => {
-  // handle incoming response here
-  let dict = job.data.dict;
-  completed=true
-  // send result back to client
-});
+const client = redis.createClient(process.env.REDIS_URL);
+
 // Define a route for triggering the login process
 app.get('/:steamID', async (req, res) => {
   try {
     console.log('yo')
     const steamID = req.params.steamID; // Take the SteamID in the  url of the website and use it as a function parameter to scrape that profile
-    let job = await requestQueue.add(steamID);
+    client.set('steamID', steamID);
+    client.set('completed', false);
     console.log('yes')
-    
-   
-    if(completed==false){
+
+    if (completed == false) {
       res.send({
         "jobId": "12345",
         "status": false,
@@ -28,7 +22,7 @@ app.get('/:steamID', async (req, res) => {
           "data": "some data"
         }
       });
-    } else{
+    } else {
       res.send(dict)
     }
   } catch (err) {
@@ -36,7 +30,26 @@ app.get('/:steamID', async (req, res) => {
     res.status(500).send('Error during login.');
   }
 });
-
+app.get('/result', async (req, res) => {
+  try {
+    const completed = await client.getAsync('completed');
+    if (completed === 'true') {
+      const result = await client.getAsync('result');
+      res.send({
+        "status": true,
+        "result": result
+      });
+    } else {
+      res.send({
+        "status": false,
+        "message": "Job not completed yet"
+      });
+    }
+  } catch (err) {
+    console.error('Error during login:', err);
+    res.status(500).send('Error during login.');
+  }
+});
 // Start the server and listen on a specific port
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

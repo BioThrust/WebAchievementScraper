@@ -3,7 +3,8 @@
     "axios": "^1.4.0",
     "bull": "^4.10.4",
     "express": "^4.18.2",
-    "puppeteer": "^20.9.0"
+    "puppeteer": "^20.9.0",
+    "redis": "^4.6.7"
   },
   "name": "herokuscripts",
   "version": "1.0.0",
