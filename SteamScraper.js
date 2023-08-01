@@ -52,7 +52,7 @@ async function login(steamID) {
 login()
 async function scrape(steamID) {
     if (/[a-z]/i.test(steamID)) {
-        await page.goto(`https://steamcommunity.com/profiles/${steamID}/games/?tab=all`);
+        await page.goto(`https://steamcommunity.com/id/${steamID}/games/?tab=all`);
         console.log('dmn bro')
     } else {
         await page.goto(`https://steamcommunity.com/profiles/${steamID}/games/?tab=all`); // Go to base achievment+game page
