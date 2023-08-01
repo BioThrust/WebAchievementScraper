@@ -60,6 +60,7 @@ async function scrape(steamID) {
     }
 
     let currentURL = page.url()
+    console.log(currentURL)
     let array = []
     let gameNames = []
     let fractionTexts = []
