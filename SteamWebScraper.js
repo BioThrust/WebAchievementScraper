@@ -23,6 +23,7 @@ responseQueue.process(async (job) => {
   dict = job.data.dict;
   completed=true
   console.log('ITS FINALLY DONE')
+  console.log(dict)
   // send result back to client
 });
 // Define a route for triggering the login process
