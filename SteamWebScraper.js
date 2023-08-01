@@ -2,6 +2,8 @@ const express = require('express');
 let completed = false
 const app = express();
 const redis = require('redis');
+const redisURL = process.env.REDIS_URL;
+console.log(redisURL)
 const client = redis.createClient(process.env.REDIS_URL);
 
 // Define a route for triggering the login process
