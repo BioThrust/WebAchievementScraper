@@ -35,16 +35,14 @@ app.get('/:steamID', async (req, res) => {
     console.log('yes');
 
     const jobResult = await job.finished();
-    const dict = jobResult.data; // Retrieve the `dict` from the finished job
+   
 
-    if (dict) {
-      res.send(dict);
-    } else {
-      res.send({
-        "status": false,
-        "message": "Job not completed yet"
-      });
-    }
+    
+    res.send({
+      "status": false,
+      "message": "Job not completed yet"
+    });
+    
   } catch (err) {
     console.error('Error during login:', err);
     res.status(500).send('Error during login.');
