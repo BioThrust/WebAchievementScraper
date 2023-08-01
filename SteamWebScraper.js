@@ -50,7 +50,22 @@ app.get('/:steamID', async (req, res) => {
     res.status(500).send('Error during login.');
   }
 });
+app.get('/result', async (req, res) => {
+  try {
 
+    if (dict) {
+      res.send(dict);
+    } else {
+      res.send({
+        "status": false,
+        "message": "Job not completed yet"
+      });
+    }
+  } catch (err) {
+    console.error('Error during login:', err);
+    res.status(500).send('Error during login.');
+  }
+});
 
 // Start the server and listen on a specific port
 const port = process.env.PORT || 3000;
