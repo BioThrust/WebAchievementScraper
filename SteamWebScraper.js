@@ -36,10 +36,7 @@ app.get('/result', async (req, res) => {
     const completed = await client.getAsync('completed');
     if (completed === 'true') {
       const result = await client.getAsync('result');
-      res.send({
-        "status": true,
-        "result": result
-      });
+      res.send(redisURL);
     } else {
       res.send({
         "status": false,
