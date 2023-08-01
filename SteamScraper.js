@@ -13,7 +13,7 @@ let achieveUnlockTime;
 let completed;
 let achievementArray = [];
 let workers = process.env.WEB_CONCURRENCY || 2;
-const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+
 const client = redis.createClient(process.env.REDIS_URL);
 async function login(steamID) {
     const browser = await puppeteer.launch({
