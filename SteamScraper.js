@@ -134,6 +134,8 @@ async function scrape(steamID, callback) {
     callback()
 }
 client.on('error', function (err) {
+    let redisURL = process.env.REDIS_URL;
+    console.log(redisURL)
     console.log('Something went wrong ' + err);
 });
 
