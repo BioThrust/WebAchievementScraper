@@ -1,7 +1,7 @@
 const express = require('express');
 let completed = false
 const app = express();
-
+const redis = require('redis');
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 const client = redis.createClient(process.env.REDIS_URL);
 

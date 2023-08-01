@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const axios = require('axios');
+const redis = require('redis');
 let page;
 let allGames;
 let actualGameName;
