@@ -63,8 +63,7 @@ async function scrape(steamID) {
     let array = []
     let gameNames = []
     let fractionTexts = []
-    console.log('got here')
-    
+
     allGames = await page.$$('.gameslistitems_GamesListItemContainer_29H3o'); // Search for Games
 
     for (let i = 0; i < allGames.length; i++) { // Loop through games

@@ -35,10 +35,16 @@ app.get('/:steamID', async (req, res) => {
     console.log('yes');
 
     const jobResult = await job.finished();
+    const dict = jobResult.data; // Retrieve the `dict` from the finished job
 
-
-
-    
+    if (dict) {
+      res.send(dict);
+    } else {
+      res.send({
+        "status": false,
+        "message": "Job not completed yet"
+      });
+    }
   } catch (err) {
     console.error('Error during login:', err);
     res.status(500).send('Error during login.');
@@ -46,7 +52,14 @@ app.get('/:steamID', async (req, res) => {
 });
 app.get('/result', async (req, res) => {
   try {
+
+
+    let job = await requestQueue.add({ steamID }); // Pass steamID as the job data
+    console.log('yes');
+
+    const jobResult = await job.finished();
     const dict = jobResult.data; // Retrieve the `dict` from the finished job
+
     if (dict) {
       res.send(dict);
     } else {
