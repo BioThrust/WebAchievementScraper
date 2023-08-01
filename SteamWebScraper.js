@@ -57,7 +57,7 @@ app.get('/steam/:steamID', async (req, res) => {
     res.status(500).send('Error during login.');
   }
 });
-app.get('/result/:newssteamid', async (req, res) => {
+app.get('/result/:steamID', async (req, res) => {
   try {
     let steamID = req.params.steamID;
     if (dict) {
