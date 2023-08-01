@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const redis = require('redis');
 const redisURL = process.env.REDIS_URL;
-const scrape = require('./scraper'); // Import the `scrape` function
+const scrape = require('./SteamScraper.js'); // Import the `scrape` function
 
 let client;
 
