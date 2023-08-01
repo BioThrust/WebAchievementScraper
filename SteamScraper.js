@@ -155,7 +155,6 @@ async function scrape(steamID) {
 let maxJobsPerWorker = 50;
 
 requestQueue.process(maxJobsPerWorker, async (job) => {
-    console.log(job)
     let steamID = job.data.steamID
     await scrape(steamID)
 });
