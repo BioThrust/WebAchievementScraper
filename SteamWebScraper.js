@@ -3,8 +3,14 @@ let completed = false
 const app = express();
 const redis = require('redis');
 const redisURL = process.env.REDIS_URL;
-console.log(redisURL)
-const client = redis.createClient(process.env.REDIS_URL);
+if (process.env.REDISTOGO_URL) {
+  var rtg = require("url").parse(process.env.REDIS_URL);
+  var client = require("redis").createClient(rtg.port, rtg.hostname);
+
+  client.auth(rtg.auth.split(":")[1]);
+} else {
+  var client = require("redis").createClient();
+}
 
 // Define a route for triggering the login process
 app.get('/:steamID', async (req, res) => {
@@ -33,12 +39,18 @@ app.get('/:steamID', async (req, res) => {
 });
 app.get('/result', async (req, res) => {
   try {
-    // const completed = await client.getAsync('completed');
+    const completed = await client.getAsync('completed');
     if (completed === 'true') {
-      // const result = await client.getAsync('result');
-      res.send(redisURL);
+      const result = await client.getAsync('result');
+      res.send({
+        "status": true,
+        "result": result
+      });
     } else {
-      res.send(redisURL);
+      res.send({
+        "status": false,
+        "message": "Job not completed yet"
+      });
     }
   } catch (err) {
     console.error('Error during login:', err);

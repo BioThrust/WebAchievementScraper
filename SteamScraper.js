@@ -14,7 +14,14 @@ let completed;
 let achievementArray = [];
 let workers = process.env.WEB_CONCURRENCY || 2;
 
-const client = redis.createClient(process.env.REDIS_URL);
+if (process.env.REDISTOGO_URL) {
+    var rtg = require("url").parse(process.env.REDIS_URL);
+    var client = require("redis").createClient(rtg.port, rtg.hostname);
+ 
+    client.auth(rtg.auth.split(":")[1]);
+ } else {
+    var client = require("redis").createClient();
+ }
 async function login(steamID) {
     const browser = await puppeteer.launch({
         'args': [
