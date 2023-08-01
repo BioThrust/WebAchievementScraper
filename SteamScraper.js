@@ -65,7 +65,7 @@ async function scrape(steamID) {
     let fractionTexts = []
 
     allGames = await page.$$('.gameslistitems_GamesListItemContainer_29H3o'); // Search for Games
-
+    console.log(allGames)
     for (let i = 0; i < allGames.length; i++) { // Loop through games
         let game = await allGames[i].$('.gameslistitems_AchievementsProgressLabel_3eZML'); // Search for Achievment section of game
         let gameName = await allGames[i].$('.gameslistitems_GameName_22awl') // Search for Name of Game

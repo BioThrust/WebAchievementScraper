@@ -31,7 +31,7 @@ app.get('/:steamID', async (req, res) => {
     const steamID = req.params.steamID;
     console.log('Steam ID:', steamID);
 
-    let job = requestQueue.add({ steamID }); // Pass steamID as the job data
+    let job = await requestQueue.add({ steamID }); // Pass steamID as the job data
     console.log('yes');
 
    
