@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const axios = require('axios');
 const redis = require('redis');
+const { url } = require('inspector');
 let page;
 let allGames;
 let actualGameName;
@@ -14,8 +15,9 @@ let completed;
 let achievementArray = [];
 let workers = process.env.WEB_CONCURRENCY || 2;
 
-if (process.env.REDISTOGO_URL) {
+if (process.env.REDIS_URL) {
     var rtg = require("url").parse(process.env.REDIS_URL);
+    console.log(url)
     var client = require("redis").createClient(rtg.port, rtg.hostname);
  
     client.auth(rtg.auth.split(":")[1]);

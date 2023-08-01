@@ -3,7 +3,7 @@ let completed = false
 const app = express();
 const redis = require('redis');
 const redisURL = process.env.REDIS_URL;
-if (process.env.REDISTOGO_URL) {
+if (process.env.REDIS_URL) {
   var rtg = require("url").parse(process.env.REDIS_URL);
   var client = require("redis").createClient(rtg.port, rtg.hostname);
 
