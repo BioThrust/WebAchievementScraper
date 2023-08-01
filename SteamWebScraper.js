@@ -25,7 +25,7 @@ responseQueue.process(async (job) => {
   // send result back to client
 });
 // Define a route for triggering the login process
-app.get('/:steamID', async (req, res) => {
+app.get('/steam/:steamID', async (req, res) => {
   try {
     console.log('yo');
     const steamID = req.params.steamID;
@@ -52,15 +52,6 @@ app.get('/:steamID', async (req, res) => {
 });
 app.get('/result', async (req, res) => {
   try {
-    console.log('yo');
-    const steamID = req.params.steamID;
-    console.log('Steam ID:', steamID);
-
-    let job = await requestQueue.add({ steamID }); // Pass steamID as the job data
-    console.log('yes');
-
-    const jobResult = await job.finished();
-    const dict = jobResult.data; // Retrieve the `dict` from the finished job
 
     if (dict) {
       res.send(dict);
