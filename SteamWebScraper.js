@@ -35,7 +35,6 @@ app.get('/:steamID', async (req, res) => {
     console.log('yes');
 
     const jobResult = await job.finished();
-    const dict = jobResult.data; // Retrieve the `dict` from the finished job
 
     if (dict) {
       res.send(dict);
