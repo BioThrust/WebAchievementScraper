@@ -33,15 +33,12 @@ app.get('/:steamID', async (req, res) => {
 });
 app.get('/result', async (req, res) => {
   try {
-    const completed = await client.getAsync('completed');
+    // const completed = await client.getAsync('completed');
     if (completed === 'true') {
-      const result = await client.getAsync('result');
+      // const result = await client.getAsync('result');
       res.send(redisURL);
     } else {
-      res.send({
-        "status": false,
-        "message": "Job not completed yet"
-      });
+      res.send(redisURL);
     }
   } catch (err) {
     console.error('Error during login:', err);
