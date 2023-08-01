@@ -17,13 +17,15 @@ let workers = process.env.WEB_CONCURRENCY || 2;
 
 if (process.env.REDIS_URL) {
     var rtg = require("url").parse(process.env.REDIS_URL);
-    console.log(url)
     var client = require("redis").createClient(rtg.port, rtg.hostname);
- 
-    client.auth(rtg.auth.split(":")[1]);
- } else {
+
+    // Check if the 'auth' property exists before using it
+    if (rtg.auth) {
+        client.auth(rtg.auth.split(":")[1]);
+    }
+} else {
     var client = require("redis").createClient();
- }
+}
 async function login(steamID) {
     const browser = await puppeteer.launch({
         'args': [
