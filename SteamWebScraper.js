@@ -2,11 +2,11 @@ const express = require('express');
 let completed = false
 const app = express();
 const Queue = require('bull');
-const requestQueue = new Queue('requests', REDIS_URL);
-const responseQueue = new Queue('responses', REDIS_URL);
+
 const redis = require('redis');
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-
+const requestQueue = new Queue('requests', REDIS_URL);
+const responseQueue = new Queue('responses', REDIS_URL);
 // Create a Redis client
 const client = redis.createClient(REDIS_URL);
 
