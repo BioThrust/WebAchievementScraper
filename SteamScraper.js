@@ -164,3 +164,4 @@ client.on("ready", function () {
         }
     });
 });
+module.exports = scrape;
